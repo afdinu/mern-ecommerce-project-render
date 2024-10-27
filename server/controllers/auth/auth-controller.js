@@ -47,15 +47,21 @@ const loginUser = async (req, res) => {
         const token = jwt.sign({
             id: user._id, role: user.role, email: user.email,userName : user.userName
         }, "CLIENT_SECRET_KEY", { expiresIn: "6000m" });
-        res.cookie("token", token, { httpOnly: true, secure: true,maxAge:360000000 }).json({success: true, message: "Logged in successful",
-            user: {
-                email: user.email,
-                role: user.role,
-                id: user._id,
-                userName : user.userName
-            }
-        }
-        )
+        // res.cookie("token", token, { httpOnly: true, secure: true,maxAge:360000000 }).json({success: true, message: "Logged in successful",
+        //     user: {
+        //         email: user.email,
+        //         role: user.role,
+        //         id: user._id,
+        //         userName : user.userName
+        //     }
+        // }
+        // )
+        res.status(200).json({success:true,message:"Logged In successfully",token, user: {
+                    email: user.email,
+                    role: user.role,
+                    id: user._id,
+                    userName : user.userName
+                }})
 
     } catch (error) {
         console.log(error);
@@ -78,8 +84,29 @@ const logoutUser = async(req,res)=>{
 
 
 // authmiddleware
+// const authmiddleware= async(req,res,next)=>{
+//     const token = req.cookies.token;
+//     if(!token){
+//         return res.status(401).json({
+//             success:false,
+//             message:"Unauthorised user!"
+//         })
+//     }
+//     try{
+//         const decoded= await jwt.verify(token,"CLIENT_SECRET_KEY")
+//         req.user=decoded
+//         next()
+
+//     }catch(error){
+  
+//         return res.status(401).json({
+//             success:false,
+//             message:"Unauthorised user!"})
+//     }
+// }
 const authmiddleware= async(req,res,next)=>{
-    const token = req.cookies.token;
+    const authHeader = req.headers[`authorization`]
+    const token =  authHeader && authHeader.split(" ")[1]
     if(!token){
         return res.status(401).json({
             success:false,
