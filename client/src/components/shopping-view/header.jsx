@@ -13,13 +13,14 @@ import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
 
 
-function MenuItems() {
+function MenuItems({setOpenMenuItems,openMenuItems}) {
     const navigate = useNavigate()
     const location = useLocation();
     const [searchParams,setSearchParams] = useSearchParams();
     function handleNavigate(getCurrentItem){
-        console.log(getCurrentItem)
+       
         sessionStorage.removeItem("filters")
+        if(openMenuItems){setOpenMenuItems(false)} 
         const currentFilter = getCurrentItem.id !=="home" &&  getCurrentItem.id !=="products" &&  getCurrentItem.id !=="search" ? {
             category:[getCurrentItem.id]
         }:null
@@ -37,7 +38,7 @@ function MenuItems() {
     )
 }
 
-function HeaderRightComponent() {
+function HeaderRightComponent({setOpenMenuItems,openMenuItems}) {
     const { user } = useSelector(state => state.auth)
     const [openCartSheet,setOpenCartSheet]=useState(false);
     const {cartItems} = useSelector(state=>state.shopCart)
@@ -95,6 +96,7 @@ function HeaderRightComponent() {
 function ShoppingHeader() {
 
     const { isAuthenticated, user } = useSelector(state => state.auth)
+    const [openMenuItems,setOpenMenuItems] = useState(false)
     // console.log(user, "user")
 
     return (
@@ -104,16 +106,16 @@ function ShoppingHeader() {
                     <HousePlug className="h-6 w-6" />
                     <span className="font-bold">E-Commerce</span>
                 </Link>
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="outline" size="icon" className="lg:hidden" >
+                <Sheet open={openMenuItems} onOpenChange={()=>setOpenMenuItems(false)}>
+                    
+                        <Button variant="outline" size="icon" className="lg:hidden" onClick={()=>setOpenMenuItems(true)}>
                             <Menu />
                             <span className="sr-only">Toggler header menu</span>
                         </Button>
-                    </SheetTrigger>
+                    
                     <SheetContent side="left" className="w-full max-w-xs">
-                        <MenuItems />
-                        <HeaderRightComponent />
+                        <MenuItems setOpenMenuItems={setOpenMenuItems} openMenuItems={openMenuItems}/>
+                        <HeaderRightComponent setOpenMenuItems={setOpenMenuItems} openMenuItems={openMenuItems}/>
                     </SheetContent>
                 </Sheet>
                 <div className="hidden lg:block">

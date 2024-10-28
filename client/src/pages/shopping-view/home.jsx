@@ -93,7 +93,7 @@ function ShoppingHome() {
     useEffect(() => {
         dispatch(getFeatureImages())
     }, [dispatch])
-    console.log(featureImages)
+    
 
     return (
         <div className="flex flex-col min-h-screen">
